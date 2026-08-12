@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>
+        Seleccionar meses
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <h1>
+        Seleccionar histórico
+    </h1>
+
+    <p>
+        Selecciona los <strong>12 meses</strong>
+        que se utilizarán para realizar el cálculo.
+    </p>
+
+    {% if error %}
+
+        <div class="error">
+            {{ error }}
+        </div>
+
+    {% endif %}
+
+
+    <form
+        method="POST"
+        action="{{ url_for('seleccionar_meses') }}"
+    >
+
+        <div class="tabla-contenedor">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Seleccionar</th>
+
+                        <th>Mes</th>
+
+                        <th>Año</th>
+
+                        <th>Días</th>
+
+                        <th>Consumo kWh</th>
+
+                        <th>Factor potencia</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for registro in historico %}
+
+                    <tr>
+
+                        <td>
+
+                            <input
+                                type="checkbox"
+                                name="meses"
+                                value="{{ loop.index0 }}"
+                                class="mes-checkbox"
+                            >
+
+                        </td>
+
+                        <td>
+                            {{ registro.mes }}
+                        </td>
+
+                        <td>
+                            {{ registro.anio }}
+                        </td>
+
+                        <td>
+                            {{ registro.dias }}
+                        </td>
+
+                        <td>
+                            {{ "{:,.2f}".format(registro.consumo) }}
+                        </td>
+
+                        <td>
+                            {{ "{:.2f}".format(registro.factor_potencia) }} %
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <p>
+
+            Seleccionados:
+
+            <strong>
+                <span id="contador">0</span>
+            </strong>
+
+            / 12
+
+        </p>
+
+
+        <button
+            type="submit"
+            class="boton"
+        >
+            Continuar
+        </button>
+
+    </form>
+
+</div>
+
+
+<script>
+
+const checkboxes =
+    document.querySelectorAll(".mes-checkbox");
+
+const contador =
+    document.getElementById("contador");
+
+
+checkboxes.forEach(function(checkbox) {
+
+    checkbox.addEventListener("change", function() {
+
+        const seleccionados =
+            document.querySelectorAll(
+                ".mes-checkbox:checked"
+            ).length;
+
+        contador.textContent =
+            seleccionados;
+
+        if (seleccionados >= 12) {
+
+            checkboxes.forEach(function(c) {
+
+                if (!c.checked) {
+
+                    c.disabled = true;
+
+                }
+
+            });
+
+        } else {
+
+            checkboxes.forEach(function(c) {
+
+                c.disabled = false;
+
+            });
+
+        }
+
+    });
+
+});
+
+</script>
+
+</body>
+</html>

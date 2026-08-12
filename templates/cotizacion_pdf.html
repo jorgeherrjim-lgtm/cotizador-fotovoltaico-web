@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>
+        Cotización Fotovoltaica
+    </title>
+
+    <style>
+
+        @page {
+            size: letter;
+            margin: 1.2cm;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+
+            font-family: Arial, Helvetica, sans-serif;
+
+            color: #222;
+
+            margin: 0;
+
+            padding: 0;
+
+            font-size: 11px;
+
+            line-height: 1.45;
+
+        }
+
+        .pagina {
+
+            width: 100%;
+
+        }
+
+        /* =====================================================
+           ENCABEZADO
+        ====================================================== */
+
+        .encabezado {
+
+            display: table;
+
+            width: 100%;
+
+            border-bottom: 3px solid #222;
+
+            padding-bottom: 15px;
+
+            margin-bottom: 20px;
+
+        }
+
+        .empresa {
+
+            display: table-cell;
+
+            width: 65%;
+
+            vertical-align: middle;
+
+        }
+
+        .empresa h1 {
+
+            margin: 0;
+
+            font-size: 24px;
+
+            letter-spacing: 1px;
+
+        }
+
+        .empresa p {
+
+            margin: 4px 0;
+
+            color: #666;
+
+            font-size: 11px;
+
+        }
+
+        .titulo {
+
+            display: table-cell;
+
+            width: 35%;
+
+            text-align: right;
+
+            vertical-align: middle;
+
+        }
+
+        .titulo h2 {
+
+            margin: 0;
+
+            font-size: 22px;
+
+        }
+
+        .titulo p {
+
+            margin: 4px 0;
+
+            color: #666;
+
+        }
+
+        /* =====================================================
+           DATOS GENERALES
+        ====================================================== */
+
+        .datos-generales {
+
+            display: table;
+
+            width: 100%;
+
+            margin-bottom: 20px;
+
+        }
+
+        .dato {
+
+            display: table-cell;
+
+            width: 25%;
+
+            border: 1px solid #ddd;
+
+            padding: 10px;
+
+            vertical-align: top;
+
+        }
+
+        .dato strong {
+
+            display: block;
+
+            font-size: 9px;
+
+            text-transform: uppercase;
+
+            color: #777;
+
+            margin-bottom: 4px;
+
+        }
+
+        .dato span {
+
+            font-size: 12px;
+
+            font-weight: bold;
+
+        }
+
+        /* =====================================================
+           TÍTULOS
+        ====================================================== */
+
+        .seccion {
+
+            margin-top: 22px;
+
+            margin-bottom: 15px;
+
+        }
+
+        .seccion-titulo {
+
+            background: #222;
+
+            color: white;
+
+            padding: 9px 12px;
+
+            font-size: 13px;
+
+            font-weight: bold;
+
+            margin-bottom: 10px;
+
+        }
+
+        /* =====================================================
+           RESUMEN SISTEMA
+        ====================================================== */
+
+        .resumen-grid {
+
+            display: table;
+
+            width: 100%;
+
+            border-collapse: separate;
+
+            border-spacing: 6px;
+
+        }
+
+        .resumen-item {
+
+            display: table-cell;
+
+            width: 20%;
+
+            border: 1px solid #ddd;
+
+            padding: 10px;
+
+            text-align: center;
+
+        }
+
+        .resumen-item .numero {
+
+            font-size: 17px;
+
+            font-weight: bold;
+
+            margin-bottom: 4px;
+
+        }
+
+        .resumen-item .texto {
+
+            color: #666;
+
+            font-size: 9px;
+
+        }
+
+        /* =====================================================
+           TABLAS
+        ====================================================== */
+
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            margin-top: 8px;
+
+        }
+
+        th {
+
+            background: #333;
+
+            color: white;
+
+            padding: 8px;
+
+            text-align: left;
+
+            font-size: 9px;
+
+        }
+
+        td {
+
+            border: 1px solid #ddd;
+
+            padding: 8px;
+
+            font-size: 10px;
+
+        }
+
+        .derecha {
+
+            text-align: right;
+
+        }
+
+        .centro {
+
+            text-align: center;
+
+        }
+
+        /* =====================================================
+           DESTACADO
+        ====================================================== */
+
+        .recomendado {
+
+            border: 2px solid #222;
+
+            padding: 12px;
+
+            margin-top: 10px;
+
+        }
+
+        .recomendado-titulo {
+
+            font-size: 14px;
+
+            font-weight: bold;
+
+            margin-bottom: 8px;
+
+        }
+
+        /* =====================================================
+           COTIZACIÓN
+        ====================================================== */
+
+        .tabla-cotizacion th {
+
+            text-align: center;
+
+        }
+
+        .tabla-cotizacion td {
+
+            vertical-align: middle;
+
+        }
+
+        .producto {
+
+            font-weight: bold;
+
+        }
+
+        .descripcion {
+
+            color: #555;
+
+            font-size: 9px;
+
+        }
+
+        /* =====================================================
+           TOTALES
+        ====================================================== */
+
+        .totales {
+
+            width: 45%;
+
+            margin-left: auto;
+
+            margin-top: 15px;
+
+        }
+
+        .fila-total {
+
+            display: table;
+
+            width: 100%;
+
+            padding: 7px 0;
+
+            border-bottom: 1px solid #ddd;
+
+        }
+
+        .fila-total .nombre {
+
+            display: table-cell;
+
+            text-align: left;
+
+        }
+
+        .fila-total .valor {
+
+            display: table-cell;
+
+            text-align: right;
+
+            font-weight: bold;
+
+        }
+
+        .total-final {
+
+            margin-top: 8px;
+
+            padding: 12px;
+
+            border: 2px solid #222;
+
+            font-size: 17px;
+
+            font-weight: bold;
+
+        }
+
+        /* =====================================================
+           CARACTERÍSTICAS
+        ====================================================== */
+
+        .caracteristicas {
+
+            display: table;
+
+            width: 100%;
+
+        }
+
+        .caracteristica {
+
+            display: table-cell;
+
+            width: 50%;
+
+            vertical-align: top;
+
+            padding: 8px 15px 8px 0;
+
+        }
+
+        .caracteristica h4 {
+
+            margin: 0 0 5px 0;
+
+            font-size: 11px;
+
+        }
+
+        .caracteristica p {
+
+            margin: 2px 0;
+
+            color: #555;
+
+        }
+
+        /* =====================================================
+           NOTAS
+        ====================================================== */
+
+        .notas {
+
+            border: 1px solid #ddd;
+
+            padding: 12px;
+
+            margin-top: 20px;
+
+            background: #fafafa;
+
+        }
+
+        .notas h3 {
+
+            margin-top: 0;
+
+            font-size: 12px;
+
+        }
+
+        .notas ul {
+
+            margin: 5px 0 0 18px;
+
+            padding: 0;
+
+        }
+
+        .notas li {
+
+            margin-bottom: 4px;
+
+        }
+
+        /* =====================================================
+           FIRMAS
+        ====================================================== */
+
+        .firmas {
+
+            display: table;
+
+            width: 100%;
+
+            margin-top: 45px;
+
+        }
+
+        .firma {
+
+            display: table-cell;
+
+            width: 50%;
+
+            text-align: center;
+
+            padding: 10px 30px;
+
+        }
+
+        .linea {
+
+            border-top: 1px solid #222;
+
+            margin-top: 35px;
+
+            padding-top: 6px;
+
+        }
+
+        /* =====================================================
+           PIE
+        ====================================================== */
+
+        .pie {
+
+            margin-top: 30px;
+
+            padding-top: 10px;
+
+            border-top: 1px solid #ddd;
+
+            text-align: center;
+
+            color: #777;
+
+            font-size: 8px;
+
+        }
+
+        .salto {
+
+            page-break-before: always;
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="pagina">
+
+
+    <!-- =====================================================
+         ENCABEZADO
+    ====================================================== -->
+
+    <div class="encabezado">
+
+        <div class="empresa">
+
+            <h1>
+                COTIZACIÓN FOTOVOLTAICA
+            </h1>
+
+            <p>
+                Sistema de generación de energía solar
+            </p>
+
+        </div>
+
+
+        <div class="titulo">
+
+            <h2>
+                PROPUESTA
+            </h2>
+
+            <p>
+                Sistema Fotovoltaico
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         DATOS GENERALES
+    ====================================================== -->
+
+    <div class="datos-generales">
+
+
+        <div class="dato">
+
+            <strong>
+                Ubicación
+            </strong>
+
+            <span>
+                {{ estado|default("No especificado") }}
+            </span>
+
+        </div>
+
+
+        <div class="dato">
+
+            <strong>
+                HSP
+            </strong>
+
+            <span>
+
+                {{ "%.2f"|format(hsp|float) }}
+
+                h/día
+
+            </span>
+
+        </div>
+
+
+        <div class="dato">
+
+            <strong>
+                Tipo de cambio
+            </strong>
+
+            <span>
+
+                ${{ "{:,.2f}".format(tipo_cambio|float) }}
+
+                MXN/USD
+
+            </span>
+
+        </div>
+
+
+        <div class="dato">
+
+            <strong>
+                Fecha
+            </strong>
+
+            <span>
+
+                {{ fecha|default("") }}
+
+            </span>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =====================================================
+         RESUMEN DEL SISTEMA
+    ====================================================== -->
+
+    <div class="seccion">
+
+        <div class="seccion-titulo">
+
+            RESUMEN DEL SISTEMA FOTOVOLTAICO
+
+        </div>
+
+
+        <div class="resumen-grid">
+
+
+            <div class="resumen-item">
+
+                <div class="numero">
+
+                    {{ "{:,.2f}".format(
+                        consumo_diario|float
+                    ) }}
+
+                </div>
+
+                <div class="texto">
+
+                    Consumo diario kWh/día
+
+                </div>
+
+            </div>
+
+
+            <div class="resumen-item">
+
+                <div class="numero">
+
+                    {{ "{:,.2f}".format(
+                        potencia_sistema|float
+                    ) }}
+
+                </div>
+
+                <div class="texto">
+
+                    Potencia requerida kW
+
+                </div>
+
+            </div>
+
+
+            <div class="resumen-item">
+
+                <div class="numero">
+
+                    {{ cotizacion.panel.cantidad|default(0)|int }}
+
+                </div>
+
+                <div class="texto">
+
+                    Paneles solares
+
+                </div>
+
+            </div>
+
+
+            <div class="resumen-item">
+
+                <div class="numero">
+
+                    {{ "{:,.3f}".format(
+                        cotizacion.panel.potencia_instalada|default(0)|float
+                    ) }}
+
+                </div>
+
+                <div class="texto">
+
+                    Potencia instalada kWp
+
+                </div>
+
+            </div>
+
+
+            <div class="resumen-item">
+
+                <div class="numero">
+
+                    {{ cotizacion.inversor.cantidad|default(0)|int }}
+
+                </div>
+
+                <div class="texto">
+
+                    Inversores
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         DIMENSIONAMIENTO
+    ====================================================== -->
+
+    <div class="seccion">
+
+        <div class="seccion-titulo">
+
+            DIMENSIONAMIENTO FOTOVOLTAICO
+
+        </div>
+
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Parámetro
+                    </th>
+
+                    <th>
+                        Resultado
+                    </th>
+
+                    <th>
+                        Unidad
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+
+                <tr>
+
+                    <td>
+                        Consumo diario promedio
+                    </td>
+
+                    <td class="derecha">
+
+                        {{ "{:,.2f}".format(
+                            consumo_diario|float
+                        ) }}
+
+                    </td>
+
+                    <td>
+                        kWh/día
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <td>
+                        Horas Sol Pico
+                    </td>
+
+                    <td class="derecha">
+
+                        {{ "%.2f"|format(
+                            hsp|float
+                        ) }}
+
+                    </td>
+
+                    <td>
+                        h/día
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <td>
+                        Potencia solar calculada
+                    </td>
+
+                    <td class="derecha">
+
+                        {{ "{:,.2f}".format(
+                            potencia_solar|float
+                        ) }}
+
+                    </td>
+
+                    <td>
+                        kWp
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <td>
+                        Potencia requerida del sistema
+                    </td>
+
+                    <td class="derecha">
+
+                        {{ "{:,.2f}".format(
+                            potencia_sistema|float
+                        ) }}
+
+                    </td>
+
+                    <td>
+                        kW
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <td>
+                        Potencia instalada
+                    </td>
+
+                    <td class="derecha">
+
+                        {{ "{:,.3f}".format(
+                            cotizacion.panel.potencia_instalada|default(0)|float
+                        ) }}
+
+                    </td>
+
+                    <td>
+                        kWp
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <td>
+                        Excedente de potencia
+                    </td>
+
+                    <td class="derecha">
+
+                        {{ "{:,.3f}".format(
+                            cotizacion.panel.excedente|default(0)|float
+                        ) }}
+
+                    </td>
+
+                    <td>
+                        kW
+                    </td>
+
+                </tr>
+
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <!-- =====================================================
+         EQUIPO
+    ====================================================== -->
+
+    <div class="seccion">
+
+        <div class="seccion-titulo">
+
+            EQUIPAMIENTO PROPUESTO
+
+        </div>
+
+
+        <table class="tabla-cotizacion">
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Equipo
+                    </th>
+
+                    <th>
+                        Marca
+                    </th>
+
+                    <th>
+                        Modelo
+                    </th>
+
+                    <th>
+                        Especificación
+                    </th>
+
+                    <th>
+                        Cantidad
+                    </th>
+
+                    <th>
+                        Precio unitario
+                    </th>
+
+                    <th>
+                        Importe
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+
+                <!-- PANEL -->
+
+                <tr>
+
+                    <td class="producto">
+
+                        Panel solar
+
+                    </td>
+
+                    <td>
+
+                        {{ cotizacion.panel.marca|default("-") }}
+
+                    </td>
+
+                    <td>
+
+                        {{ cotizacion.panel.modelo|default("-") }}
+
+                    </td>
+
+                    <td>
+
+                        {{ "{:,.0f}".format(
+                            cotizacion.panel.potencia_w|default(0)|float
+                        ) }}
+
+                        W
+
+                    </td>
+
+                    <td class="centro">
+
+                        {{ cotizacion.panel.cantidad|default(0)|int }}
+
+                    </td>
+
+                    <td class="derecha">
+
+                        $
+
+                        {{ "{:,.2f}".format(
+                            cotizacion.panel.precio_mxn|default(0)|float
+                        ) }}
+
+                    </td>
+
+                    <td class="derecha">
+
+                        $
+
+                        {{ "{:,.2f}".format(
+                            cotizacion.panel.total|default(0)|float
+                        ) }}
+
+                    </td>
+
+                </tr>
+
+
+                <!-- INVERSOR -->
+
+                <tr>
+
+                    <td class="producto">
+
+                        Inversor
+
+                    </td>
+
+                    <td>
+
+                        {{ cotizacion.inversor.marca|default("-") }}
+
+                    </td>
+
+                    <td>
+
+                        {{ cotizacion.inversor.modelo|default("-") }}
+
+                    </td>
+
+                    <td>
+
+                        {{ "{:,.2f}".format(
+                            cotizacion.inversor.potencia_kw|default(0)|float
+                        ) }}
+
+                        kW
+
+                    </td>
+
+                    <td class="centro">
+
+                        {{ cotizacion.inversor.cantidad|default(0)|int }}
+
+                    </td>
+
+                    <td class="derecha">
+
+                        $
+
+                        {{ "{:,.2f}".format(
+                            cotizacion.inversor.precio_mxn|default(0)|float
+                        ) }}
+
+                    </td>
+
+                    <td class="derecha">
+
+                        $
+
+                        {{ "{:,.2f}".format(
+                            cotizacion.inversor.total|default(0)|float
+                        ) }}
+
+                    </td>
+
+                </tr>
+
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <!-- =====================================================
+         DETALLE DE PRECIOS
+    ====================================================== -->
+
+    <div class="seccion">
+
+        <div class="seccion-titulo">
+
+            RESUMEN ECONÓMICO
+
+        </div>
+
+
+        <div class="totales">
+
+
+            <div class="fila-total">
+
+                <div class="nombre">
+                    Paneles solares
+                </div>
+
+                <div class="valor">
+
+                    $
+
+                    {{ "{:,.2f}".format(
+                        cotizacion.panel.total|default(0)|float
+                    ) }}
+
+                </div>
+
+            </div>
+
+
+            <div class="fila-total">
+
+                <div class="nombre">
+                    Inversores
+                </div>
+
+                <div class="valor">
+
+                    $
+
+                    {{ "{:,.2f}".format(
+                        cotizacion.inversor.total|default(0)|float
+                    ) }}
+
+                </div>
+
+            </div>
+
+
+            <div class="fila-total">
+
+                <div class="nombre">
+                    Subtotal
+                </div>
+
+                <div class="valor">
+
+                    $
+
+                    {{ "{:,.2f}".format(
+                        cotizacion.subtotal|default(
+                            (
+                                cotizacion.panel.total|default(0)|float
+                                +
+                                cotizacion.inversor.total|default(0)|float
+                            )
+                        )
+                    ) }}
+
+                </div>
+
+            </div>
+
+
+            <div class="fila-total">
+
+                <div class="nombre">
+                    IVA (16%)
+                </div>
+
+                <div class="valor">
+
+                    $
+
+                    {{ "{:,.2f}".format(
+                        cotizacion.iva|default(
+                            (
+                                cotizacion.panel.total|default(0)|float
+                                +
+                                cotizacion.inversor.total|default(0)|float
+                            ) * 0.16
+                        )
+                    ) }}
+
+                </div>
+
+            </div>
+
+
+            <div class="total-final">
+
+                <div>
+
+                    TOTAL DE LA COTIZACIÓN
+
+                </div>
+
+                <div style="text-align:right; margin-top:5px;">
+
+                    $
+
+                    {{ "{:,.2f}".format(
+                        cotizacion.total_con_iva|default(
+                            (
+                                cotizacion.panel.total|default(0)|float
+                                +
+                                cotizacion.inversor.total|default(0)|float
+                            ) * 1.16
+                        )
+                    ) }}
+
+                    MXN
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         INFORMACIÓN DEL EQUIPO
+    ====================================================== -->
+
+    <div class="seccion">
+
+        <div class="seccion-titulo">
+
+            INFORMACIÓN DE LA PROPUESTA
+
+        </div>
+
+
+        <div class="caracteristicas">
+
+
+            <div class="caracteristica">
+
+                <h4>
+                    Sistema fotovoltaico
+                </h4>
+
+                <p>
+                    Sistema dimensionado de acuerdo con
+                    el consumo eléctrico analizado.
+                </p>
+
+                <p>
+                    Potencia requerida:
+                    <strong>
+                        {{ "{:,.2f}".format(
+                            potencia_sistema|float
+                        ) }}
+                        kW
+                    </strong>
+                </p>
+
+                <p>
+                    Potencia instalada:
+                    <strong>
+                        {{ "{:,.3f}".format(
+                            cotizacion.panel.potencia_instalada|default(0)|float
+                        ) }}
+                        kWp
+                    </strong>
+                </p>
+
+            </div>
+
+
+            <div class="caracteristica">
+
+                <h4>
+                    Generación solar
+                </h4>
+
+                <p>
+                    Ubicación:
+                    <strong>
+                        {{ estado|default("-") }}
+                    </strong>
+                </p>
+
+                <p>
+                    Horas Sol Pico:
+                    <strong>
+                        {{ "%.2f"|format(
+                            hsp|float
+                        ) }}
+                        h/día
+                    </strong>
+                </p>
+
+                <p>
+                    Consumo diario:
+                    <strong>
+                        {{ "{:,.2f}".format(
+                            consumo_diario|float
+                        ) }}
+                        kWh/día
+                    </strong>
+                </p>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         NOTAS
+    ====================================================== -->
+
+    <div class="notas">
+
+        <h3>
+            Consideraciones de la cotización
+        </h3>
+
+        <ul>
+
+            <li>
+                Los precios mostrados corresponden a los
+                valores introducidos en la calculadora.
+            </li>
+
+            <li>
+                El tipo de cambio utilizado en la cotización es:
+                <strong>
+                    ${{ "{:,.2f}".format(
+                        tipo_cambio|float
+                    ) }}
+                    MXN/USD
+                </strong>.
+            </li>
+
+            <li>
+                La cantidad de paneles se determina mediante
+                redondeo hacia arriba para cubrir la potencia
+                requerida del sistema.
+            </li>
+
+            <li>
+                La cantidad de inversores se calcula considerando
+                la potencia total instalada del arreglo.
+            </li>
+
+            <li>
+                Los costos mostrados corresponden únicamente
+                a los equipos registrados en esta cotización.
+            </li>
+
+            <li>
+                Instalación, estructura, cableado, protecciones,
+                trámites y otros conceptos deberán cotizarse
+                por separado cuando corresponda.
+            </li>
+
+            <li>
+                La propuesta puede estar sujeta a cambios
+                dependiendo de disponibilidad, especificaciones
+                finales y condiciones del proyecto.
+            </li>
+
+        </ul>
+
+    </div>
+
+
+    <!-- =====================================================
+         FIRMAS
+    ====================================================== -->
+
+    <div class="firmas">
+
+
+        <div class="firma">
+
+            <div class="linea">
+
+                Elaboró
+
+            </div>
+
+        </div>
+
+
+        <div class="firma">
+
+            <div class="linea">
+
+                Cliente
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =====================================================
+         PIE
+    ====================================================== -->
+
+    <div class="pie">
+
+        Cotización de sistema fotovoltaico ·
+        Documento generado automáticamente
+
+        <br>
+
+        Los cálculos y precios mostrados corresponden
+        a la información registrada en el sistema.
+
+    </div>
+
+
+</div>
+
+
+</body>
+
+</html>

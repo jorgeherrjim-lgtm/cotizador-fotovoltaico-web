@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Cotizador Fotovoltaico
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+<div class="contenedor">
+
+    <div class="icono">
+        ☀️
+    </div>
+
+
+    <h1>
+        Cotizador Fotovoltaico
+    </h1>
+
+
+    <h2>
+        Lectura de recibo de CFE
+    </h2>
+
+
+    <div class="seccion-pdf">
+
+        <div class="icono-pdf">
+            📄
+        </div>
+
+
+        <h3>
+            Selecciona tu recibo
+        </h3>
+
+
+        <p>
+            Carga el recibo de CFE en formato PDF
+        </p>
+
+
+        <!--
+            IMPORTANTE:
+            El formulario manda el PDF a la función
+            "leer_pdf" de app.py.
+        -->
+
+        <form
+            action="{{ url_for('leer_pdf') }}"
+            method="POST"
+            enctype="multipart/form-data"
+        >
+
+
+            <div class="selector-archivo">
+
+                <input
+                    type="file"
+                    id="pdf"
+                    name="pdf"
+                    accept=".pdf,application/pdf"
+                    required
+                >
+
+            </div>
+
+
+            <br>
+
+
+            <button
+                type="submit"
+                class="boton"
+            >
+
+                Leer recibo
+
+            </button>
+
+
+        </form>
+
+
+        <p class="formato">
+            Formato permitido: PDF
+        </p>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const archivo =
+    document.getElementById("pdf");
+
+
+archivo.addEventListener(
+    "change",
+    function() {
+
+        if (
+            archivo.files.length > 0
+        ) {
+
+            const nombre =
+                archivo.files[0].name;
+
+            console.log(
+                "PDF seleccionado:",
+                nombre
+            );
+
+        }
+
+    }
+);
+
+</script>
+
+
+</body>
+
+</html>

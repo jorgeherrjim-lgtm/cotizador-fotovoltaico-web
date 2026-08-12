@@ -1,0 +1,1654 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dimensionamiento y cotización fotovoltaica</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+    <style>
+
+        .seccion {
+            margin-top: 30px;
+        }
+
+        .resultado {
+            margin-bottom: 20px;
+        }
+
+        .tabla-contenedor {
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            font-weight: bold;
+        }
+
+        .recomendada {
+            font-weight: bold;
+        }
+
+        .formulario-cotizacion {
+            margin-top: 20px;
+        }
+
+        .campo {
+            margin-bottom: 15px;
+        }
+
+        .campo label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .campo input,
+        .campo select {
+            width: 100%;
+            max-width: 500px;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .fila-cotizacion {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .tarjeta {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+
+        .total {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .subtotal {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .iva {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .cotizacion-final {
+            border: 2px solid #222;
+        }
+
+        .boton {
+            display: inline-block;
+            text-decoration: none;
+            padding: 10px 18px;
+            margin-top: 10px;
+        }
+
+        .boton-pdf {
+            display: inline-block;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            padding: 13px 22px;
+            margin-top: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+        }
+
+        .nota {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 700px) {
+
+            .fila-cotizacion {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="contenedor">
+
+
+    <!-- =====================================================
+         TÍTULO
+    ====================================================== -->
+
+    <h1>
+        Dimensionamiento de paneles solares
+    </h1>
+
+
+    <!-- =====================================================
+         DATOS DEL SISTEMA
+    ====================================================== -->
+
+    <div class="seccion">
+
+        <h2>
+            Datos del sistema
+        </h2>
+
+        <div class="resultado">
+
+            <p>
+                <strong>Estado:</strong>
+                {{ estado }}
+            </p>
+
+            <p>
+                <strong>HSP:</strong>
+                {{ "%.2f"|format(hsp|float) }}
+                h/día
+            </p>
+
+            <p>
+                <strong>Consumo diario:</strong>
+                {{ "{:,.2f}".format(consumo_diario|float) }}
+                kWh/día
+            </p>
+
+            <p>
+                <strong>Potencia solar calculada:</strong>
+                {{ "{:,.2f}".format(potencia_solar|float) }}
+                kWp
+            </p>
+
+            <p>
+                <strong>Potencia del sistema:</strong>
+                {{ "{:,.2f}".format(potencia_sistema|float) }}
+                kW
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <hr>
+
+
+    <!-- =====================================================
+         PROPUESTA PRINCIPAL
+    ====================================================== -->
+
+    <div class="seccion">
+
+        <h2>
+            Propuesta de panel
+        </h2>
+
+        <div class="resultado">
+
+            <p>
+                <strong>Potencia del sistema:</strong>
+
+                {{ "{:,.2f}".format(
+                    potencia_sistema|float
+                ) }}
+
+                kW
+            </p>
+
+            <p>
+                <strong>Potencia de panel propuesta:</strong>
+
+                {{ "{:,.0f}".format(
+                    propuesta.potencia_panel_w|default(0)|float
+                ) }}
+
+                W
+            </p>
+
+        </div>
+
+
+        <h3>
+            Paneles requeridos
+        </h3>
+
+
+        <div class="resultado">
+
+            <p>
+                <strong>No. de paneles:</strong>
+
+                {{ propuesta.numero_paneles|default(0)|int }}
+            </p>
+
+
+            <p>
+                <strong>Potencia instalada:</strong>
+
+                {{ "{:,.3f}".format(
+                    propuesta.potencia_instalada_kw|default(0)|float
+                ) }}
+
+                kW
+            </p>
+
+
+            <p>
+                <strong>Excedente:</strong>
+
+                {{ "{:,.3f}".format(
+                    propuesta.excedente_kw|default(0)|float
+                ) }}
+
+                kW
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <hr>
+
+
+    <!-- =====================================================
+         INVERSOR
+    ====================================================== -->
+
+    <div class="seccion">
+
+        <h2>
+            Inversor
+        </h2>
+
+
+        <div class="resultado">
+
+            <p>
+
+                <strong>
+                    Potencia del arreglo:
+                </strong>
+
+                {{ "{:,.3f}".format(
+                    propuesta.potencia_instalada_kw|default(0)|float
+                ) }}
+
+                kWp
+
+            </p>
+
+
+            <p>
+
+                <strong>
+                    Cantidad de inversores:
+                </strong>
+
+                {{ propuesta.inversores|default(1)|int }}
+
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <hr>
+
+
+    <!-- =====================================================
+         COMPARACIÓN DE PANELES
+    ====================================================== -->
+
+    <div class="seccion">
+
+        <h2>
+            Comparación de paneles
+        </h2>
+
+
+        <p>
+            Se calcula la cantidad de paneles necesaria
+            para cada potencia propuesta.
+        </p>
+
+
+        <div class="tabla-contenedor">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Potencia del panel
+                        </th>
+
+                        <th>
+                            No. paneles
+                        </th>
+
+                        <th>
+                            Potencia instalada
+                        </th>
+
+                        <th>
+                            Excedente
+                        </th>
+
+                        <th>
+                            Inversores
+                        </th>
+
+                        <th>
+                            Recomendación
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for opcion in opciones_paneles %}
+
+                    <tr>
+
+                        <td>
+
+                            {{ "{:,.0f}".format(
+                                opcion.potencia_panel_w|default(0)|float
+                            ) }}
+
+                            W
+
+                        </td>
+
+
+                        <td>
+
+                            {{ opcion.numero_paneles|default(0)|int }}
+
+                        </td>
+
+
+                        <td>
+
+                            {{ "{:,.3f}".format(
+                                opcion.potencia_instalada_kw|default(0)|float
+                            ) }}
+
+                            kW
+
+                        </td>
+
+
+                        <td>
+
+                            {{ "{:,.3f}".format(
+                                opcion.excedente_kw|default(0)|float
+                            ) }}
+
+                            kW
+
+                        </td>
+
+
+                        <td>
+
+                            {{ opcion.inversores|default(1)|int }}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if opcion.recomendada|default(false) %}
+
+                                <span class="recomendada">
+                                    ⭐ Recomendada
+                                </span>
+
+                            {% else %}
+
+                                -
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <hr>
+
+
+    <!-- =====================================================
+         CALCULADORA DE COTIZACIÓN
+    ====================================================== -->
+
+    <div class="seccion">
+
+        <h2>
+            Calculadora de cotización
+        </h2>
+
+
+        <p>
+
+            Consulta los precios actuales de los equipos
+            en Excel Solar e introdúcelos manualmente
+            en esta calculadora.
+
+        </p>
+
+
+        <p class="nota">
+
+            La aplicación no obtiene automáticamente los
+            precios de Excel Solar. El usuario debe capturarlos.
+
+        </p>
+
+
+        <!-- =================================================
+             PANELES
+        ================================================== -->
+
+        <div class="tarjeta">
+
+            <h3>
+                Paneles solares
+            </h3>
+
+
+            <div class="formulario-cotizacion">
+
+
+                <div class="campo">
+
+                    <label for="panel_potencia">
+                        Potencia del panel:
+                    </label>
+
+
+                    <select
+                        id="panel_potencia"
+                        onchange="actualizarPaneles()"
+                    >
+
+                        {% for opcion in opciones_paneles %}
+
+                        <option
+                            value="{{ opcion.potencia_panel_w|default(0)|float }}"
+                            data-cantidad="{{ opcion.numero_paneles|default(0)|int }}"
+                        >
+
+                            {{ "{:,.0f}".format(
+                                opcion.potencia_panel_w|default(0)|float
+                            ) }}
+
+                            W
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="panel_marca">
+                        Marca:
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="panel_marca"
+                        placeholder="Ej. Jinko"
+                    >
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="panel_modelo">
+                        Modelo:
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="panel_modelo"
+                        placeholder="Ej. Jinko 585"
+                    >
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="panel_precio">
+                        Precio unitario del panel (MXN):
+                    </label>
+
+
+                    <input
+                        type="number"
+                        id="panel_precio"
+                        min="0"
+                        step="0.01"
+                        placeholder="Ej. 1896.33"
+                    >
+
+                </div>
+
+
+                <div class="resultado">
+
+                    <p>
+
+                        <strong>
+                            Cantidad de paneles:
+                        </strong>
+
+                        <span id="cantidad_paneles">
+                            0
+                        </span>
+
+                    </p>
+
+
+                    <p class="subtotal">
+
+                        Subtotal de paneles:
+
+                        $
+
+                        <span id="total_paneles">
+                            0.00
+                        </span>
+
+                        MXN
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             INVERSOR
+        ================================================== -->
+
+        <div class="tarjeta">
+
+            <h3>
+                Inversor
+            </h3>
+
+
+            <div class="formulario-cotizacion">
+
+
+                <div class="campo">
+
+                    <label for="inversor_marca">
+                        Marca:
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="inversor_marca"
+                        placeholder="Ej. Growatt"
+                    >
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="inversor_modelo">
+                        Modelo:
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="inversor_modelo"
+                        placeholder="Ej. MIN 6000 TL-X"
+                    >
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="inversor_potencia">
+                        Potencia del inversor:
+                    </label>
+
+
+                    <input
+                        type="number"
+                        id="inversor_potencia"
+                        min="0"
+                        step="0.001"
+                        placeholder="Ej. 6"
+                    >
+
+                    <small>
+                        Potencia del inversor en kW.
+                    </small>
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="cantidad_inversor_input">
+                        Cantidad de inversores:
+                    </label>
+
+
+                    <input
+                        type="number"
+                        id="cantidad_inversor_input"
+                        min="1"
+                        step="1"
+                        value="1"
+                    >
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="inversor_precio">
+                        Precio unitario del inversor (MXN):
+                    </label>
+
+
+                    <input
+                        type="number"
+                        id="inversor_precio"
+                        min="0"
+                        step="0.01"
+                        placeholder="Ej. 11450.46"
+                    >
+
+                </div>
+
+
+                <div class="resultado">
+
+                    <p>
+
+                        <strong>
+                            Cantidad de inversores:
+                        </strong>
+
+                        <span id="cantidad_inversores">
+                            1
+                        </span>
+
+                    </p>
+
+
+                    <p class="subtotal">
+
+                        Subtotal de inversores:
+
+                        $
+
+                        <span id="total_inversores">
+                            0.00
+                        </span>
+
+                        MXN
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             RESUMEN
+        ================================================== -->
+
+        <div class="tarjeta cotizacion-final">
+
+            <h3>
+                Resumen de cotización
+            </h3>
+
+
+            <div class="resultado">
+
+
+                <p>
+
+                    <strong>
+                        Panel:
+                    </strong>
+
+                    <span id="resumen_panel">
+                        -
+                    </span>
+
+                </p>
+
+
+                <p>
+
+                    <strong>
+                        Inversor:
+                    </strong>
+
+                    <span id="resumen_inversor">
+                        -
+                    </span>
+
+                </p>
+
+
+                <hr>
+
+
+                <p>
+
+                    <strong>
+                        Subtotal paneles:
+                    </strong>
+
+                    $
+
+                    <span id="resumen_total_paneles">
+                        0.00
+                    </span>
+
+                    MXN
+
+                </p>
+
+
+                <p>
+
+                    <strong>
+                        Subtotal inversores:
+                    </strong>
+
+                    $
+
+                    <span id="resumen_total_inversores">
+                        0.00
+                    </span>
+
+                    MXN
+
+                </p>
+
+
+                <p class="subtotal">
+
+                    SUBTOTAL:
+
+                    $
+
+                    <span id="subtotal_general">
+                        0.00
+                    </span>
+
+                    MXN
+
+                </p>
+
+
+                <p class="iva">
+
+                    IVA (16%):
+
+                    $
+
+                    <span id="iva">
+                        0.00
+                    </span>
+
+                    MXN
+
+                </p>
+
+
+                <hr>
+
+
+                <p class="total">
+
+                    TOTAL CON IVA:
+
+                    $
+
+                    <span id="total_cotizacion">
+                        0.00
+                    </span>
+
+                    MXN
+
+                </p>
+
+            </div>
+
+
+            <!-- =================================================
+                 FORMULARIO PDF
+            ================================================== -->
+
+            <form
+                id="formulario_pdf"
+                method="POST"
+                action="{{ url_for('generar_pdf') }}"
+                target="_blank"
+                onsubmit="prepararPDF()"
+            >
+
+                <input
+                    type="hidden"
+                    name="estado"
+                    id="pdf_estado"
+                    value="{{ estado }}"
+                >
+
+                <input
+                    type="hidden"
+                    name="hsp"
+                    id="pdf_hsp"
+                    value="{{ hsp }}"
+                >
+
+                <input
+                    type="hidden"
+                    name="consumo_diario"
+                    id="pdf_consumo_diario"
+                    value="{{ consumo_diario }}"
+                >
+
+                <input
+                    type="hidden"
+                    name="potencia_solar"
+                    id="pdf_potencia_solar"
+                    value="{{ potencia_solar }}"
+                >
+
+                <input
+                    type="hidden"
+                    name="potencia_sistema"
+                    id="pdf_potencia_sistema"
+                    value="{{ potencia_sistema }}"
+                >
+
+
+                <!-- PANEL -->
+
+                <input
+                    type="hidden"
+                    name="panel_marca"
+                    id="pdf_panel_marca"
+                >
+
+                <input
+                    type="hidden"
+                    name="panel_modelo"
+                    id="pdf_panel_modelo"
+                >
+
+                <input
+                    type="hidden"
+                    name="panel_potencia"
+                    id="pdf_panel_potencia"
+                >
+
+                <input
+                    type="hidden"
+                    name="cantidad_paneles"
+                    id="pdf_cantidad_paneles"
+                >
+
+                <input
+                    type="hidden"
+                    name="precio_panel"
+                    id="pdf_precio_panel"
+                >
+
+                <input
+                    type="hidden"
+                    name="total_paneles"
+                    id="pdf_total_paneles"
+                >
+
+
+                <!-- INVERSOR -->
+
+                <input
+                    type="hidden"
+                    name="inversor_marca"
+                    id="pdf_inversor_marca"
+                >
+
+                <input
+                    type="hidden"
+                    name="inversor_modelo"
+                    id="pdf_inversor_modelo"
+                >
+
+                <input
+                    type="hidden"
+                    name="inversor_potencia"
+                    id="pdf_inversor_potencia"
+                >
+
+                <input
+                    type="hidden"
+                    name="cantidad_inversores"
+                    id="pdf_cantidad_inversores"
+                >
+
+                <input
+                    type="hidden"
+                    name="precio_inversor"
+                    id="pdf_precio_inversor"
+                >
+
+                <input
+                    type="hidden"
+                    name="total_inversores"
+                    id="pdf_total_inversores"
+                >
+
+
+                <!-- TOTALES -->
+
+                <input
+                    type="hidden"
+                    name="subtotal"
+                    id="pdf_subtotal"
+                >
+
+                <input
+                    type="hidden"
+                    name="iva"
+                    id="pdf_iva"
+                >
+
+                <input
+                    type="hidden"
+                    name="total"
+                    id="pdf_total"
+                >
+
+
+                <button
+                    type="submit"
+                    class="boton-pdf"
+                >
+
+                    📄 Generar cotización en PDF
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <br>
+
+
+    <!-- =====================================================
+         BOTONES
+    ====================================================== -->
+
+    <a
+        href="{{ url_for('calcular') }}"
+        class="boton"
+    >
+
+        ← Volver a cálculos
+
+    </a>
+
+
+    &nbsp;
+
+
+    <a
+        href="{{ url_for('inicio') }}"
+        class="boton"
+    >
+
+        Cargar otro recibo
+
+    </a>
+
+
+</div>
+
+
+<!-- =======================================================
+     JAVASCRIPT
+======================================================== -->
+
+<script>
+
+
+/* =========================================================
+   FORMATEAR DINERO
+========================================================= */
+
+function dinero(valor) {
+
+    return Number(valor || 0).toLocaleString(
+        "es-MX",
+        {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }
+    );
+
+}
+
+
+/* =========================================================
+   OBTENER CANTIDAD DE PANELES
+========================================================= */
+
+function obtenerCantidadPaneles() {
+
+    const select =
+        document.getElementById("panel_potencia");
+
+    if (!select) {
+        return 0;
+    }
+
+    const opcion =
+        select.options[select.selectedIndex];
+
+    if (!opcion) {
+        return 0;
+    }
+
+    return parseInt(opcion.dataset.cantidad) || 0;
+
+}
+
+
+/* =========================================================
+   ACTUALIZAR PANELES
+========================================================= */
+
+function actualizarPaneles() {
+
+    const select =
+        document.getElementById("panel_potencia");
+
+    if (!select) {
+        return;
+    }
+
+    const opcion =
+        select.options[select.selectedIndex];
+
+    if (!opcion) {
+        return;
+    }
+
+    const cantidad =
+        parseInt(opcion.dataset.cantidad) || 0;
+
+
+    document.getElementById(
+        "cantidad_paneles"
+    ).textContent = cantidad;
+
+
+    calcularCotizacion();
+
+}
+
+
+/* =========================================================
+   CALCULAR COTIZACIÓN
+========================================================= */
+
+function calcularCotizacion() {
+
+
+    /* =====================================================
+       PANELES
+    ====================================================== */
+
+    const cantidadPaneles =
+        obtenerCantidadPaneles();
+
+
+    const precioPanel =
+        parseFloat(
+            document.getElementById(
+                "panel_precio"
+            ).value
+        ) || 0;
+
+
+    const totalPaneles =
+        cantidadPaneles * precioPanel;
+
+
+    document.getElementById(
+        "total_paneles"
+    ).textContent =
+        dinero(totalPaneles);
+
+
+    document.getElementById(
+        "resumen_total_paneles"
+    ).textContent =
+        dinero(totalPaneles);
+
+
+    /* =====================================================
+       INVERSORES
+    ====================================================== */
+
+    const cantidadInversores =
+        parseInt(
+            document.getElementById(
+                "cantidad_inversor_input"
+            ).value
+        ) || 1;
+
+
+    document.getElementById(
+        "cantidad_inversores"
+    ).textContent =
+        cantidadInversores;
+
+
+    const precioInversor =
+        parseFloat(
+            document.getElementById(
+                "inversor_precio"
+            ).value
+        ) || 0;
+
+
+    const totalInversores =
+        cantidadInversores * precioInversor;
+
+
+    document.getElementById(
+        "total_inversores"
+    ).textContent =
+        dinero(totalInversores);
+
+
+    document.getElementById(
+        "resumen_total_inversores"
+    ).textContent =
+        dinero(totalInversores);
+
+
+    /* =====================================================
+       SUBTOTAL
+    ====================================================== */
+
+    const subtotal =
+        totalPaneles +
+        totalInversores;
+
+
+    document.getElementById(
+        "subtotal_general"
+    ).textContent =
+        dinero(subtotal);
+
+
+    /* =====================================================
+       IVA
+    ====================================================== */
+
+    const iva =
+        subtotal * 0.16;
+
+
+    document.getElementById(
+        "iva"
+    ).textContent =
+        dinero(iva);
+
+
+    /* =====================================================
+       TOTAL
+    ====================================================== */
+
+    const total =
+        subtotal + iva;
+
+
+    document.getElementById(
+        "total_cotizacion"
+    ).textContent =
+        dinero(total);
+
+
+    /* =====================================================
+       INFORMACIÓN DEL PANEL
+    ====================================================== */
+
+    const marcaPanel =
+        document.getElementById(
+            "panel_marca"
+        ).value.trim();
+
+
+    const modeloPanel =
+        document.getElementById(
+            "panel_modelo"
+        ).value.trim();
+
+
+    const potenciaPanel =
+        document.getElementById(
+            "panel_potencia"
+        ).value;
+
+
+    let nombrePanel = "";
+
+
+    if (marcaPanel) {
+        nombrePanel += marcaPanel;
+    }
+
+
+    if (modeloPanel) {
+
+        if (nombrePanel) {
+            nombrePanel += " ";
+        }
+
+        nombrePanel += modeloPanel;
+
+    }
+
+
+    if (nombrePanel) {
+        nombrePanel += " ";
+    }
+
+
+    nombrePanel +=
+        "(" +
+        potenciaPanel +
+        " W)";
+
+
+    document.getElementById(
+        "resumen_panel"
+    ).textContent =
+        nombrePanel;
+
+
+    /* =====================================================
+       INFORMACIÓN DEL INVERSOR
+    ====================================================== */
+
+    const marcaInversor =
+        document.getElementById(
+            "inversor_marca"
+        ).value.trim();
+
+
+    const modeloInversor =
+        document.getElementById(
+            "inversor_modelo"
+        ).value.trim();
+
+
+    const potenciaInversor =
+        document.getElementById(
+            "inversor_potencia"
+        ).value;
+
+
+    let nombreInversor = "";
+
+
+    if (marcaInversor) {
+        nombreInversor += marcaInversor;
+    }
+
+
+    if (modeloInversor) {
+
+        if (nombreInversor) {
+            nombreInversor += " ";
+        }
+
+        nombreInversor += modeloInversor;
+
+    }
+
+
+    if (potenciaInversor) {
+
+        if (nombreInversor) {
+            nombreInversor += " ";
+        }
+
+        nombreInversor +=
+            "(" +
+            potenciaInversor +
+            " kW)";
+
+    }
+
+
+    if (!nombreInversor) {
+        nombreInversor = "-";
+    }
+
+
+    document.getElementById(
+        "resumen_inversor"
+    ).textContent =
+        nombreInversor;
+
+}
+
+
+/* =========================================================
+   PREPARAR DATOS PARA EL PDF
+========================================================= */
+
+function prepararPDF() {
+
+    /* Primero actualizar todos los cálculos */
+    calcularCotizacion();
+
+
+    /* =====================================================
+       PANEL
+    ====================================================== */
+
+    document.getElementById(
+        "pdf_panel_marca"
+    ).value =
+        document.getElementById(
+            "panel_marca"
+        ).value;
+
+
+    document.getElementById(
+        "pdf_panel_modelo"
+    ).value =
+        document.getElementById(
+            "panel_modelo"
+        ).value;
+
+
+    document.getElementById(
+        "pdf_panel_potencia"
+    ).value =
+        document.getElementById(
+            "panel_potencia"
+        ).value;
+
+
+    document.getElementById(
+        "pdf_cantidad_paneles"
+    ).value =
+        obtenerCantidadPaneles();
+
+
+    document.getElementById(
+        "pdf_precio_panel"
+    ).value =
+        document.getElementById(
+            "panel_precio"
+        ).value || 0;
+
+
+    document.getElementById(
+        "pdf_total_paneles"
+    ).value =
+        convertirNumeroJS(
+            document.getElementById(
+                "total_paneles"
+            ).textContent
+        );
+
+
+    /* =====================================================
+       INVERSOR
+    ====================================================== */
+
+    document.getElementById(
+        "pdf_inversor_marca"
+    ).value =
+        document.getElementById(
+            "inversor_marca"
+        ).value;
+
+
+    document.getElementById(
+        "pdf_inversor_modelo"
+    ).value =
+        document.getElementById(
+            "inversor_modelo"
+        ).value;
+
+
+    document.getElementById(
+        "pdf_inversor_potencia"
+    ).value =
+        document.getElementById(
+            "inversor_potencia"
+        ).value || 0;
+
+
+    document.getElementById(
+        "pdf_cantidad_inversores"
+    ).value =
+        document.getElementById(
+            "cantidad_inversor_input"
+        ).value || 1;
+
+
+    document.getElementById(
+        "pdf_precio_inversor"
+    ).value =
+        document.getElementById(
+            "inversor_precio"
+        ).value || 0;
+
+
+    document.getElementById(
+        "pdf_total_inversores"
+    ).value =
+        convertirNumeroJS(
+            document.getElementById(
+                "total_inversores"
+            ).textContent
+        );
+
+
+    /* =====================================================
+       TOTALES
+    ====================================================== */
+
+    document.getElementById(
+        "pdf_subtotal"
+    ).value =
+        convertirNumeroJS(
+            document.getElementById(
+                "subtotal_general"
+            ).textContent
+        );
+
+
+    document.getElementById(
+        "pdf_iva"
+    ).value =
+        convertirNumeroJS(
+            document.getElementById(
+                "iva"
+            ).textContent
+        );
+
+
+    document.getElementById(
+        "pdf_total"
+    ).value =
+        convertirNumeroJS(
+            document.getElementById(
+                "total_cotizacion"
+            ).textContent
+        );
+
+}
+
+
+/* =========================================================
+   CONVERTIR DINERO MOSTRADO A NÚMERO
+========================================================= */
+
+function convertirNumeroJS(valor) {
+
+    if (!valor) {
+        return 0;
+    }
+
+    return Number(
+        String(valor)
+            .replace(/,/g, "")
+            .replace(/\$/g, "")
+            .trim()
+    ) || 0;
+
+}
+
+
+/* =========================================================
+   EVENTOS
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        const campos = [
+
+            "panel_marca",
+            "panel_modelo",
+            "panel_precio",
+
+            "inversor_marca",
+            "inversor_modelo",
+            "inversor_potencia",
+            "inversor_precio",
+
+            "cantidad_inversor_input"
+
+        ];
+
+
+        campos.forEach(
+            function(id) {
+
+                const elemento =
+                    document.getElementById(id);
+
+
+                if (elemento) {
+
+                    elemento.addEventListener(
+                        "input",
+                        calcularCotizacion
+                    );
+
+                }
+
+            }
+        );
+
+
+        actualizarPaneles();
+
+    }
+);
+
+</script>
+
+
+</body>
+
+</html>

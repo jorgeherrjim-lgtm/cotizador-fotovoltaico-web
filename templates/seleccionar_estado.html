@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>
+        Seleccionar estado
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <h1>
+        Ubicación del proyecto
+    </h1>
+
+    <p>
+        Selecciona el estado donde se instalará
+        el sistema fotovoltaico.
+    </p>
+
+    {% if error %}
+
+        <div class="error">
+            {{ error }}
+        </div>
+
+    {% endif %}
+
+
+    <form
+        method="POST"
+        action="{{ url_for('seleccionar_estado') }}"
+    >
+
+        <label for="estado">
+
+            <strong>
+                Estado:
+            </strong>
+
+        </label>
+
+
+        <select
+            name="estado"
+            id="estado"
+            required
+        >
+
+            <option value="">
+                Selecciona un estado
+            </option>
+
+            {% for estado, hsp in estados.items() %}
+
+            <option
+                value="{{ estado }}"
+                data-hsp="{{ hsp }}"
+            >
+                {{ estado }}
+            </option>
+
+            {% endfor %}
+
+        </select>
+
+
+        <div
+            id="hsp-container"
+            style="display:none;"
+        >
+
+            <h2>
+                Horas Sol Pico
+            </h2>
+
+            <p>
+
+                HSP:
+
+                <strong>
+                    <span id="hsp">
+                        -
+                    </span>
+                    h/día
+                </strong>
+
+            </p>
+
+        </div>
+
+
+        <br>
+
+
+        <button
+            type="submit"
+            class="boton"
+        >
+            Continuar con el cálculo
+        </button>
+
+    </form>
+
+</div>
+
+
+<script>
+
+const estado =
+    document.getElementById("estado");
+
+const hsp =
+    document.getElementById("hsp");
+
+const container =
+    document.getElementById("hsp-container");
+
+
+estado.addEventListener(
+    "change",
+    function() {
+
+        const opcion =
+            estado.options[
+                estado.selectedIndex
+            ];
+
+        const valor =
+            opcion.getAttribute(
+                "data-hsp"
+            );
+
+        if (valor) {
+
+            hsp.textContent =
+                parseFloat(valor).toFixed(2);
+
+            container.style.display =
+                "block";
+
+        } else {
+
+            container.style.display =
+                "none";
+
+            hsp.textContent =
+                "-";
+        }
+
+    }
+);
+
+</script>
+
+</body>
+
+</html>

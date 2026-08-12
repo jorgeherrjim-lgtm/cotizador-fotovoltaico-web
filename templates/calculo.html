@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>
+        Cálculo fotovoltaico
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+
+<div class="contenedor">
+
+
+    <h1>
+        Cálculo de consumo
+    </h1>
+
+
+    <!-- ================================================== -->
+    <!-- UBICACIÓN -->
+    <!-- ================================================== -->
+
+    <h2>
+        Ubicación
+    </h2>
+
+
+    <div class="resultado">
+
+        <p>
+
+            <strong>
+                Estado:
+            </strong>
+
+            {{ estado }}
+
+        </p>
+
+
+        <p>
+
+            <strong>
+                HSP:
+            </strong>
+
+            {{ "%.2f"|format(hsp) }}
+
+            h/día
+
+        </p>
+
+    </div>
+
+
+    <hr>
+
+
+    <!-- ================================================== -->
+    <!-- BIMESTRES -->
+    <!-- ================================================== -->
+
+    <h2>
+        Cálculo equivalente al método utilizado
+    </h2>
+
+
+    <h3>
+        6 Bimestres
+    </h3>
+
+
+    <div class="tabla-contenedor">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Bimestre
+                    </th>
+
+                    <th>
+                        Periodo
+                    </th>
+
+                    <th>
+                        Consumo
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for bimestre in resultado.bimestres %}
+
+                <tr>
+
+                    <td>
+                        {{ bimestre.numero }}
+                    </td>
+
+                    <td>
+                        {{ bimestre.periodo }}
+                    </td>
+
+                    <td>
+
+                        {{ "{:,.2f}".format(
+                            bimestre.consumo
+                        ) }}
+
+                        kWh
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <br>
+
+
+    <div class="resultado">
+
+
+        <p>
+
+            <strong>
+                Promedio bimestral:
+            </strong>
+
+            {{ "{:,.2f}".format(
+                resultado.promedio_bimestral
+            ) }}
+
+            kWh
+
+        </p>
+
+
+        <p>
+
+            <strong>
+                Promedio diario:
+            </strong>
+
+            {{ "{:,.2f}".format(
+                resultado.promedio_diario_bimestral
+            ) }}
+
+            kWh/día
+
+        </p>
+
+
+        <p>
+
+            <strong>
+                Potencia calculada:
+            </strong>
+
+            {{ resultado.potencia_calculada }}
+
+            kW
+
+        </p>
+
+
+    </div>
+
+
+    <hr>
+
+
+    <!-- ================================================== -->
+    <!-- CONSUMO NORMALIZADO -->
+    <!-- ================================================== -->
+
+    <h2>
+        Consumo normalizado
+    </h2>
+
+
+    <div class="resultado">
+
+
+        <p>
+
+            <strong>
+                Periodicidad:
+            </strong>
+
+            Mensual
+
+        </p>
+
+
+        <p>
+
+            <strong>
+                Consumo total:
+            </strong>
+
+            {{ "{:,.2f}".format(
+                resultado.consumo_total
+            ) }}
+
+            kWh
+
+        </p>
+
+
+        <p>
+
+            <strong>
+                Días analizados:
+            </strong>
+
+            {{ resultado.dias_totales }}
+
+            días
+
+        </p>
+
+
+        <p>
+
+            <strong>
+                Promedio mensual:
+            </strong>
+
+            {{ "{:,.2f}".format(
+                resultado.promedio_mensual
+            ) }}
+
+            kWh
+
+        </p>
+
+
+        <p>
+
+            <strong>
+                Consumo diario:
+            </strong>
+
+            {{ "{:,.2f}".format(
+                resultado.consumo_diario
+            ) }}
+
+            kWh/día
+
+        </p>
+
+
+    </div>
+
+
+    <hr>
+
+
+    <!-- ================================================== -->
+    <!-- POTENCIA SOLAR -->
+    <!-- ================================================== -->
+
+    <h2>
+        Potencia solar preliminar
+    </h2>
+
+
+    <div class="resultado">
+
+
+        <p>
+
+            Consumo diario:
+
+            <strong>
+
+                {{ "{:,.2f}".format(
+                    resultado.consumo_diario
+                ) }}
+
+                kWh/día
+
+            </strong>
+
+        </p>
+
+
+        <p>
+
+            HSP:
+
+            <strong>
+
+                {{ "%.2f"|format(hsp) }}
+
+                h/día
+
+            </strong>
+
+        </p>
+
+
+        <h2>
+
+            Potencia solar preliminar:
+
+            {{ "{:,.2f}".format(
+                resultado.potencia_solar
+            ) }}
+
+            kWp
+
+        </h2>
+
+
+    </div>
+
+
+    <br>
+
+
+    <!-- ================================================== -->
+    <!-- BOTÓN PARA CALCULAR PANELES -->
+    <!-- ================================================== -->
+
+    <div class="resultado">
+
+        <h2>
+            Dimensionamiento de paneles
+        </h2>
+
+        <p>
+            Con los datos anteriores podemos calcular
+            la cantidad de paneles solares necesaria.
+        </p>
+
+
+        <a
+            href="{{ url_for('paneles') }}"
+            class="boton"
+        >
+
+            Calcular paneles
+
+        </a>
+
+    </div>
+
+
+    <br>
+
+
+    <!-- ================================================== -->
+    <!-- CARGAR OTRO RECIBO -->
+    <!-- ================================================== -->
+
+    <a
+        href="{{ url_for('inicio') }}"
+        class="boton"
+    >
+
+        Cargar otro recibo
+
+    </a>
+
+
+</div>
+
+
+</body>
+
+</html>

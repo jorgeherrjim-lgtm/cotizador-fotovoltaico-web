@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Datos del recibo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <h1>Datos del recibo de CFE</h1>
+
+    <p>
+        Archivo:
+        <strong>{{ archivo }}</strong>
+    </p>
+
+    <p>
+        Páginas:
+        <strong>{{ paginas }}</strong>
+    </p>
+
+    <hr>
+
+    <h2>Información del recibo</h2>
+
+    <div class="datos">
+
+        <p>
+            <strong>No. de servicio:</strong>
+            {{ datos.get("servicio", "No encontrado") }}
+        </p>
+
+        <p>
+            <strong>Tarifa:</strong>
+            {{ datos.get("tarifa", "No encontrada") }}
+        </p>
+
+        <p>
+            <strong>Carga conectada:</strong>
+            {{ datos.get("carga", "No encontrada") }} kW
+        </p>
+
+        <p>
+            <strong>Demanda contratada:</strong>
+            {{ datos.get("demanda_contratada", "No encontrada") }} kW
+        </p>
+
+        <p>
+            <strong>No. de medidor:</strong>
+            {{ datos.get("medidor", "No encontrado") }}
+        </p>
+
+        <p>
+            <strong>Periodo facturado:</strong>
+            {{ datos.get("periodo", "No encontrado") }}
+        </p>
+
+        <p>
+            <strong>Total a pagar:</strong>
+            ${{ "{:,.2f}".format(datos.get("total", 0)) }}
+        </p>
+
+    </div>
+
+    <hr>
+
+    <h2>Histórico de consumo</h2>
+
+    {% if historico %}
+
+    <div class="tabla-contenedor">
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Mes</th>
+                    <th>Año</th>
+                    <th>Días</th>
+                    <th>Consumo kWh</th>
+                    <th>Factor potencia</th>
+                    <th>Consumo diario</th>
+                    <th>Precio medio</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for registro in historico %}
+
+                <tr>
+
+                    <td>{{ registro.mes }}</td>
+
+                    <td>{{ registro.anio }}</td>
+
+                    <td>{{ registro.dias }}</td>
+
+                    <td>
+                        {{ "{:,.2f}".format(registro.consumo) }}
+                    </td>
+
+                    <td>
+                        {{ "{:.2f}".format(registro.factor_potencia) }} %
+                    </td>
+
+                    <td>
+                        {{ "{:.2f}".format(registro.consumo_diario) }}
+                    </td>
+
+                    <td>
+                        ${{ "{:.4f}".format(registro.precio_medio) }}
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    {% else %}
+
+        <p>No se encontró histórico de consumo.</p>
+
+    {% endif %}
+
+    <br>
+
+    <a
+        class="boton"
+        href="{{ url_for('seleccionar_meses') }}"
+    >
+        Continuar
+    </a>
+
+</div>
+
+</body>
+</html>
