@@ -1,0 +1,6 @@
+Flask
+gunicorn
+pdfplumber
+PyMuPDF
+reportlab
+requests
